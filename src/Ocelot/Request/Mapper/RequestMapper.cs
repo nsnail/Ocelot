@@ -40,7 +40,9 @@
 
         private async Task<HttpContent> MapContent(HttpRequest request)
         {
-            if (request.Body == null || (request.Body.CanSeek && request.Body.Length <= 0))
+            // if (request.Body == null || (request.Body.CanSeek && request.Body.Length)
+            // ↑ 当body 为 FileBufferingReadStream，可能会出现request.Body.Length=0的情况， 那么 就会漏掉后续的流程 。修改为 ↓
+            if (request.Body.CanSeek && request.Body.Length <= 0 && (request.ContentLength ?? 0) <=0)
             {
                 return null;
             }
